@@ -1,0 +1,53 @@
+README for Shell
+Sarah Filman <sfilman>
+
+
+Overall Flow of Shell:
+
+  1. Get input from user
+  2. Check if command refers to a built in command (ln, rm, cd, exit)
+     a. If it is a built in command, check for errors. If no errors,
+        execute system call. return to step 1.
+     b.If it is not a built in command, go to step 3.
+  3. Parse command line for file redirections. Save these files and
+     remove references to them in the command line
+  4. Parse the remainder of the command line for the command the arguments
+  5. Try to execve the command with associated arguments. Look for command
+     in hard-coded path locations. Handle errors accordingly.
+  6. Return to step 1.
+
+
+Bugs:
+The only bug I was able to find is this:
+type 'cat bogusfilename' into s-fil shell
+
+The error that cat prints is:
+: bogusfilename: No such file or directory
+
+The output should be
+cat: bogusfilename: No such file or directory
+
+I couldn't figure out why it does that, because I'm not actually writing that
+error, so I don't know how to get commands that I'm simply executing to fix
+their output.
+
+
+Design Bugs:
+If I were to go back and code this again, I would have consolidated my numerous
+"extract___" functions into one tokenizer. The reason I made so many different
+functions is that there were slight differences I needed for say, extracting the
+path after cd or rm from extracting a word after a file redirect. Had I planned
+ahead better, I could have eliminated the large amounts of redundant code and
+made a more streamlined tokenizer.
+
+
+Extra Credit:
+I implemented a hard coded path feature. When given a command, I try to first
+exec the command straight, and then subsequently search
+/bin
+/usr/bin
+/local/bin
+/usr/local/bin
+for the given command. Because execve shouldn't return if it is successful,
+I put each call after one another, on the assumption that if execve failed,
+it would go to the next line and try the new path.
